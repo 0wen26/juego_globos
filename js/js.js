@@ -34,10 +34,11 @@ class Balloon {
 
 let globos=[];
 let cuadrado=[];
-let colores=['blue','green','orange','black','red','yellow'];
+let img = [1,2,3,4,5,6,7,8];
 
 function empezar(){
     areaJuego.start();
+    areaJuego.listen();
     //globos.push(new Globo(500,415,25));
     //globo = ;
     //areaJuego.draw();
@@ -55,8 +56,9 @@ let areaJuego = {
         this.canvas.height = 500;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.interval = setInterval(updateAreaJuego,2000);
-        
+        this.interval = setInterval(updateAreaJuego,600);
+        elemLeft = this.canvas.offsetLeft + this.canvas.clientLeft;
+        elemTop = this.canvas.offsetTop + this.canvas.clientTop;
     },
     //Borra canvas
     stop : function() {
@@ -64,31 +66,74 @@ let areaJuego = {
     },    
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+    listen : function(){
+        this.canvas.addEventListener('click', function(event) {
+            let x = event.pageX - elemLeft;
+            let y = event.pageY - elemTop; 
+            comprobar(x,y);           
+        }) ;
     }
     
 }
+
+
+
+
 function updateAreaJuego (){
     let x = Math.floor( Math.random() * (750-50))+50;
-    let xx = x-25;
-    
-    let color = Math.floor( Math.random() * (6-0))+0;    
-    globos.push(new Globo(x,415,25,colores[color]));
+    let color = Math.floor( Math.random() * (8-1))+1;
+    let img = new Image();
+    if (color==1) {
+        img.src = "imagenes/1.png";
+    } else if (color == 2) {
+        img.src = "imagenes/2.png"; 
+    }else if(color==3){
+        img.src = "imagenes/3.png"; 
+    }else if(color==4){
+        img.src = "imagenes/4.png"; 
+    }else if(color==5){
+        img.src = "imagenes/5.png"; 
+    }else if(color==6){
+        img.src = "imagenes/6.png"; 
+    }else if(color==7){
+        img.src = "imagenes/7.png"; 
+    }else{
+        img.src = "imagenes/8.png"; 
+    }
+    globos.push(new Globo(x,415,img));
 
-    cuadrado.push(new Cuadrado(xx,389,52,52));
+    cuadrado.push(new Cuadrado(x,415,52,52));
     areaJuego.clear();
     for (let i = 0; i < globos.length; i++) {
                 
         globos[i].update()
-       // cuadrado[i].update()
+       cuadrado[i].update()
        globos[i].newPos();
-        //cuadrado[i].newPos();
-        console.log(globos[i]);
+        cuadrado[i].newPos();
+        //console.log(globos[i]);
     }
     //areaJuego.clear();
     //globo.cY += globo.speedcY-3;
     //globo.y += globo.speedY-3;
     //globo.update() 
 }
+function comprobar(x,y){
+   globos.forEach(function(element)  {
+       if (y > element.y && y < element.y + element.height && x > element.x && x < element.x + element.width) {
+           globos.pop(element);
+           cuadrado.pop(element);
+           console.log('conseguido');
+       }
+   });
+
+    
+        
+        //console.log(`esto es x: ${x} y esto y: ${y}`);
+    
+}
+
+
 
 function Cuadrado (x,y,width,height){
     this.width = width
@@ -96,7 +141,7 @@ function Cuadrado (x,y,width,height){
     this.x = x;
     this.y= y;
     this.speedY =0;
-
+    
     this.update = function(){
         context = areaJuego.context;
         context.beginPath();
@@ -110,10 +155,11 @@ function Cuadrado (x,y,width,height){
 
 }
 
-function Globo (x,y,radio,color){
+function Globo (x,y,img){
     this.x = x 
     this.y = y
-    this.radio = radio
+    this.width = 52
+    this.height = 52
     this.speedX = 0;
     this.speedY = 0;
     //this.color= color;
@@ -123,14 +169,17 @@ function Globo (x,y,radio,color){
     this.speedcX = 0;
     this.speedcY =0;
     this.PI = 3.1415;
+    this.img = img;
     this.update = function(){
         ctx = areaJuego.context;
+        ctx.drawImage(img, this.x,this.y,this.width,this.height);
         
         
         //
     }
     this.newPos = function(){
-        this.y += this.speedY-10;
+        this.y = this.y -10;
+        
     }
     
     
