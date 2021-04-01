@@ -35,7 +35,7 @@ class Balloon {
 let globos=[];
 let cuadrado=[];
 let img = [1,2,3,4,5,6,7,8];
-
+let score =0;
 function empezar(){
     areaJuego.start();
     areaJuego.listen();
@@ -56,7 +56,7 @@ let areaJuego = {
         this.canvas.height = 500;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.interval = setInterval(updateAreaJuego,600);
+        this.interval = setInterval(updateAreaJuego,200);
         elemLeft = this.canvas.offsetLeft + this.canvas.clientLeft;
         elemTop = this.canvas.offsetTop + this.canvas.clientTop;
     },
@@ -73,10 +73,14 @@ let areaJuego = {
             let y = event.pageY - elemTop; 
             comprobar(x,y);           
         }) ;
+    },
+    drawScore: function(){
+        this.context.font = "16px Arial";
+        this.context.fillStyle = "#0095DD";
+        this.context.fillText("Score: "+score, 8, 20);
     }
     
 }
-
 
 
 
@@ -101,16 +105,20 @@ function updateAreaJuego (){
     }else{
         img.src = "imagenes/8.png"; 
     }
-    globos.push(new Globo(x,415,img));
+    globos.push(new Globo(x,415,img,1));
 
     cuadrado.push(new Cuadrado(x,415,52,52));
+    
     areaJuego.clear();
+    areaJuego.drawScore();
     for (let i = 0; i < globos.length; i++) {
-                
-        globos[i].update()
-       cuadrado[i].update()
-       globos[i].newPos();
-        cuadrado[i].newPos();
+        if (globos[i].status == 1) {
+            globos[i].update()
+            //cuadrado[i].update()
+            globos[i].newPos();
+            //cuadrado[i].newPos();
+        }
+        
         //console.log(globos[i]);
     }
     //areaJuego.clear();
@@ -121,9 +129,11 @@ function updateAreaJuego (){
 function comprobar(x,y){
    globos.forEach(function(element)  {
        if (y > element.y && y < element.y + element.height && x > element.x && x < element.x + element.width) {
-           globos.pop(element);
-           cuadrado.pop(element);
-           console.log('conseguido');
+            globos.pop(element);
+            cuadrado.pop(element);
+            element.status = 0;
+            score++;
+           //console.log(element.status);
        }
    });
 
@@ -155,9 +165,10 @@ function Cuadrado (x,y,width,height){
 
 }
 
-function Globo (x,y,img){
+function Globo (x,y,img,status){
     this.x = x 
     this.y = y
+    this.status = status
     this.width = 52
     this.height = 52
     this.speedX = 0;
@@ -178,7 +189,16 @@ function Globo (x,y,img){
         //
     }
     this.newPos = function(){
-        this.y = this.y -10;
+        let r = Math.floor( Math.random() * (3-1))+1;
+        console.log(r);
+        if (r == 1) {
+            this.y = this.y -5;
+            this.x = this.x -5;
+        }else{
+            this.y = this.y -5;
+            this.x = this.x +5;
+        }
+        
         
     }
     
