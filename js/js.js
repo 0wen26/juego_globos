@@ -78,6 +78,9 @@ let areaJuego = {
         this.context.font = "16px Arial";
         this.context.fillStyle = "#0095DD";
         this.context.fillText("Score: "+score, 8, 20);
+    },
+    prueba: function(){
+        
     }
     
 }
